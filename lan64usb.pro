@@ -36,4 +36,5 @@ DESTDIR = "bin/win_x32"
 OTHER_FILES += \
     firmware/Makefile \
     firmware/main.c \
-    firmware/usbconfig.h
+    firmware/usbconfig.h \
+    doc/schaltplan.pdf
