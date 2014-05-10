@@ -1,82 +1,12 @@
 /* Name: main.c
- * Projekt: c64keys2usb
+ * Projekt: lan64usb
  * Author: Thorsten Kattanek
- * Erstellt am: 30.07.2013
+ * Erstellt am: 10.05.2014
  * Copyright: Thorsten Kattanek
- * Vesrion: 1.1
+ * Vesrion: 1.00
  * License: GNU GPL v2 (see License.txt), GNU GPL v3 or proprietary (CommercialLicense.txt)
  *
- * Hinweis ! Diese Firmware ist nur für die Platine mit Bedrahteten Bauteilen. V1.1 !
- *
  */
-
-/* Pinbelegung Atmega8 in PDIP
- * PIN 02 - PD0 = LED        A
- * PIN 28 - PC5 = RESTORE    E
- * PIN 11 - PD5 = Matrix Col 0 A
- * PIN 14 - PB0 = Matrix Col 1 A
- * PIN 16 - PB2 = Matrix Col 2 A
- * PIN 13 - PD7 = Matrix Col 3 A
- * PIN 17 - PB3 = Matrix Col 4 A
- * PIN 12 - PD6 = Matrix Col 5 A
- * PIN 18 - PB4 = Matrix Col 6 A
- * PIN 15 - PB1 = Matrix Col 7 A
- * PIN 19 - PB5 = Matrix Row 0 E
- * PIN 23 - PC0 = Matrix Row 1 E
- * PIN 06 - PD4 = Matrix Row 2 E
- * PIN 27 - PC4 = Matrix Row 3 E
- * PIN 25 - PC2 = Matrix Row 4 E
- * PIN 26 - PC3 = Matrix Row 5 E
- * PIN 03 - PD1 = Matrix Row 6 E
- * PIN 24 - PC1 = Matrix Row 7 E
-*/
-
-//////////////////////////////////////
-/// Je nach Hardware konfigurieren ///
-//////////////////////////////////////
-
-#define LED_N    D   //Port
-#define LED_P    0   //PinNummer
-
-#define RESTORE_N    C   //Port
-#define RESTORE_P    5   //PinNummer
-
-#define PA0N    D   // Port
-#define PA0P    5   // PinNummer
-#define PA1N    B   // Port
-#define PA1P    0   // PinNummer
-#define PA2N    B   // Port
-#define PA2P    2   // PinNummer
-#define PA3N    D   // Port
-#define PA3P    7   // PinNummer
-#define PA4N    B   // Port
-#define PA4P    3   // PinNummer
-#define PA5N    D   // Port
-#define PA5P    6   // PinNummer
-#define PA6N    B   // Port
-#define PA6P    4   // PinNummer
-#define PA7N    B   // Port
-#define PA7P    1   // PinNummer
-
-#define PB0N    B   // Port
-#define PB0P    5   // PinNummer
-#define PB1N    C   // Port
-#define PB1P    0   // PinNummer
-#define PB2N    D   // Port
-#define PB2P    4   // PinNummer
-#define PB3N    C   // Port
-#define PB3P    4   // PinNummer
-#define PB4N    C   // Port
-#define PB4P    2   // PinNummer
-#define PB5N    C   // Port
-#define PB5P    3   // PinNummer
-#define PB6N    D   // Port
-#define PB6P    1   // PinNummer
-#define PB7N    C   // Port
-#define PB7P    1   // PinNummer
-
-///////////////////////////////////////
-///////////////////////////////////////
 
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -178,6 +108,7 @@ usbRequest_t    *rq = (void *)data;
 
 void setPORTA(uint8_t value)
 {
+    /*
     // Bit0
     OUTPORT(PA0N) &= ~(0x01<<PA0P);
     OUTPORT(PA0N) |= ((~value >> 0) & 0x01)<<PA0P;
@@ -202,6 +133,7 @@ void setPORTA(uint8_t value)
     // Bit7
     OUTPORT(PA7N) &= ~(0x01<<PA7P);
     OUTPORT(PA7N) |= ((~value >> 7) & 0x01)<<PA7P;
+    */
 }
 
 /* ------------------------------------------------------------------------- */
@@ -210,6 +142,7 @@ uint8_t getPORTB()
 {
     uint8_t value = 0;
 
+    /*
     // Bit0
     value |= ((INPORT(PB0N)>>PB0P)&0x01);
     // Bit1
@@ -226,28 +159,20 @@ uint8_t getPORTB()
     value |= ((INPORT(PB6N)>>PB6P)&0x01)<<6;
     // Bit7
     value |= ((INPORT(PB7N)>>PB7P)&0x01)<<7;
-
+    */
     return ~value;
 }
 
-/* ------------------------------------------------------------------------- */
-
-void LEDOn()
-{
-    OUTPORT(LED_N) |= 1 << LED_P;
-}
-
-/* ------------------------------------------------------------------------- */
-
-void LEDOff()
-{
-    OUTPORT(LED_N) &= ~(1 << LED_P);
-}
-
-/* ------------------------------------------------------------------------- */
-
 void keyPoll(void)
 {
+    static uint8_t wert = 0;
+
+    PORTB = (PORTB & 0xf0) | (wert & 0x0f);
+    PORTD = (PORTD & 0x0f) | (wert & 0xf0);
+
+    wert ++;
+
+    /*
     uint8_t BitMask = 0x01;
     uint8_t i = 0;
 
@@ -295,50 +220,21 @@ void keyPoll(void)
         key_buffer[i] = getPORTB();
         BitMask <<= 1;
     }
+    */
 }
 
 /* ------------------------------------------------------------------------- */
 
 int main(void)
 {
-    // Port A als Ausgänge setzen
-    DDRPORT(PA0N) |= 1 << PA0P;
-    DDRPORT(PA1N) |= 1 << PA1P;
-    DDRPORT(PA2N) |= 1 << PA2P;
-    DDRPORT(PA3N) |= 1 << PA3P;
-    DDRPORT(PA4N) |= 1 << PA4P;
-    DDRPORT(PA5N) |= 1 << PA5P;
-    DDRPORT(PA6N) |= 1 << PA6P;
-    DDRPORT(PA7N) |= 1 << PA7P;
+    // PortB Pin 0-3 auf Ausgan setzen
+    DDRB |= 0x0f;
 
-    // LED Ausgang setzen
-    DDRPORT(LED_N) |= 1 << LED_P;
+    // PortD Pin 4-7 und Pin 0 auf Ausgang setzen
+    DDRD |= 0xf1;
 
-    // Port B als Eingänge setzen
-    DDRPORT(PB0N) &= ~(1 << PB0P);
-    DDRPORT(PB1N) &= ~(1 << PB1P);
-    DDRPORT(PB2N) &= ~(1 << PB2P);
-    DDRPORT(PB3N) &= ~(1 << PB3P);
-    DDRPORT(PB4N) &= ~(1 << PB4P);
-    DDRPORT(PB5N) &= ~(1 << PB5P);
-    DDRPORT(PB6N) &= ~(1 << PB6P);
-    DDRPORT(PB7N) &= ~(1 << PB7P);
-
-    // RESTORE Eingang setzen
-    DDRPORT(RESTORE_N) &= ~(1 << RESTORE_P);
-
-    // Port B Pullup Widerstände aktivieren
-    OUTPORT(PB0N) |= 1 << PB0P;
-    OUTPORT(PB1N) |= 1 << PB1P;
-    OUTPORT(PB2N) |= 1 << PB2P;
-    OUTPORT(PB3N) |= 1 << PB3P;
-    OUTPORT(PB4N) |= 1 << PB4P;
-    OUTPORT(PB5N) |= 1 << PB5P;
-    OUTPORT(PB6N) |= 1 << PB6P;
-    OUTPORT(PB7N) |= 1 << PB7P;
-
-    // RESTORE Pullup Widertsand setzen
-    OUTPORT(RESTORE_N) |= 1 << RESTORE_P;
+    PORTB = 0;
+    PORTD &= 0x0f;
 
     uchar   i;
     // key_buffer löschen
@@ -350,9 +246,9 @@ int main(void)
     // Startmeldung mittels Blinken 5x
     for(i=0;i<5;i++)
     {
-        LEDOn();
+        PORTD |= 0x01;
         _delay_ms(40);
-        LEDOff();
+        PORTD &= 0xfe;
         _delay_ms(80);
     }
 
