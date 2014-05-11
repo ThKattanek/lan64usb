@@ -74,6 +74,14 @@ uchar usbFunctionRead(uchar *data, uchar len)
 /* usbFunctionWrite() wird aufgerufen wenn der Host Daten Senden möchte */
 uchar   usbFunctionWrite(uchar *data, uchar len)
 {
+    uint8_t i;
+
+    for(i=0;i<len;i++)
+    {
+        PORTB = (PORTB & 0xf0) | (data[i] & 0x0f);
+        PORTD = (PORTD & 0x0f) | (data[i] & 0xf0);
+    }
+
     return 1;
     /// In dieser Version muss der Host keine Daten senden
 }
@@ -165,13 +173,6 @@ uint8_t getPORTB()
 
 void keyPoll(void)
 {
-    static uint8_t wert = 0;
-
-    PORTB = (PORTB & 0xf0) | (wert & 0x0f);
-    PORTD = (PORTD & 0x0f) | (wert & 0xf0);
-
-    wert ++;
-
     /*
     uint8_t BitMask = 0x01;
     uint8_t i = 0;
@@ -267,7 +268,7 @@ int main(void)
     for(;;){                // Endlosschleife
         wdt_reset();
         usbPoll();
-        keyPoll();
+        //keyPoll();
     }
     return 0;
 }
