@@ -1,7 +1,7 @@
 /* Name: main.c
  * Projekt: lan64usb
  * Author: Thorsten Kattanek
- * Erstellt am: 10.05.2014
+ * Erstellt am: 11.05.2014
  * Copyright: Thorsten Kattanek
  * Vesrion: 1.00
  * License: GNU GPL v2 (see License.txt), GNU GPL v3 or proprietary (CommercialLicense.txt)
@@ -15,12 +15,16 @@
 #include <avr/pgmspace.h>   /* benötigt von usbdrv.h */
 #include "usbdrv.h"
 
-#define CONCAT(a, b)            a ## b
-#define OUTPORT(name)           CONCAT(PORT, name)
-#define INPORT(name)            CONCAT(PIN, name)
-#define DDRPORT(name)           CONCAT(DDR, name)
+//#define CONCAT(a, b)            a ## b
+//#define OUTPORT(name)           CONCAT(PORT, name)
+//#define INPORT(name)            CONCAT(PIN, name)
+//#define DDRPORT(name)           CONCAT(DDR, name)
 
-uint8_t key_buffer[16];
+volatile unsigned char buffer[128];
+volatile unsigned short led_blink_counter = 0;
+volatile unsigned char error_flag = 0;
+volatile unsigned char transfer_status = 0;
+volatile unsigned short block_anzahl;
 
 /* ------------------------------------------------------------------------- */
 /* ----------------------------- USB Interface ----------------------------- */
@@ -55,6 +59,7 @@ static uchar    bytesRemaining;
 /* usbFunctionRead() wird aufgerufen wenn der Host Daten Empfangen möchte */
 uchar usbFunctionRead(uchar *data, uchar len)
 {
+    /*
     uint8_t i;
 
     if(len > bytesRemaining)
@@ -62,28 +67,186 @@ uchar usbFunctionRead(uchar *data, uchar len)
 
     for(i=0;i<len;i++)
     {
-        data[i] = key_buffer[i+currentAddress];
+        data[i] = buffer[i+currentAddress];
     }
+
     currentAddress += len;
     bytesRemaining -= len;
+    */
     return len;
 }
 
 /* ------------------------------------------------------------------------- */
 
+void transfer_block(void)
+{
+    unsigned short time_out;
+    unsigned char i;
+
+    switch(transfer_status)
+    {
+    case 0:
+
+        block_anzahl = (buffer[5]+1)<<1;
+        transfer_status = 1;
+        error_flag = 0;             // Fehler zurücksetzen
+
+        // Syncronisieren mit C64
+        // C64 PORTB Eingänge auf 1 setzen (PIN 3-7)
+        PORTB |= 0x08;
+        PORTD |= 0xf0;
+
+        // Warten auf C64 PORTB Ausgänge 0 (PIN 0-2)
+
+        time_out = 0xfff;
+        while((time_out != 0) && !(PINB & 0x07))
+        {
+            time_out--;
+        }
+
+        if(time_out != 0)
+        {
+            // C64 PORTB Eingänge auf 0 setzen (PIN 3-7)
+            PORTB &= ~0x08;
+            PORTD &= ~0xf0;
+        }
+        else
+        {
+            // Error !
+            transfer_status = 0;
+            error_flag = 1;
+        }
+
+        // buffer an C64 übertragen
+        // LowNibble auf PORT legen
+
+        for(i=0;i<128;i++)
+        {
+            PORTD = (PORTD & 0x0f) | buffer[i] << 4;
+            PORTB |= 0x08;
+
+            // Warten auf C64 PORTB PIN2
+
+            time_out = 0xfff;
+            while((time_out != 0) && !(PINB & 0x04))
+            {
+                time_out--;
+            }
+
+            if(time_out != 0)
+            {
+                // HighNibble auf PORT legen
+                PORTD = (PORTD & 0x0f) | (buffer[i] & 0xf0);
+                PORTB &= ~0x08;
+
+                time_out = 0xfff;
+                while((time_out != 0) && (PINB & 0x04))
+                {
+                    time_out--;
+                }
+
+                if(time_out != 0)
+                {
+                    // Alles OK !!
+                }
+                else
+                {
+                    // Error !
+                    transfer_status = 0;
+                    error_flag = 1;
+                    break;
+                }
+            }
+            else
+            {
+                // Error !
+                transfer_status = 0;
+                error_flag = 1;
+                break;
+            }
+        }
+
+        block_anzahl--;
+
+    break;
+
+    case 1:
+        for(i=0;i<128;i++)
+        {
+            PORTD = (PORTD & 0x0f) | buffer[i] << 4;
+            PORTB |= 0x08;
+
+            // Warten auf C64 PORTB PIN2
+
+            time_out = 0xfff;
+            while((time_out != 0) && !(PINB & 0x04))
+            {
+                time_out--;
+            }
+
+            if(time_out != 0)
+            {
+                // HighNibble auf PORT legen
+                PORTD = (PORTD & 0x0f) | (buffer[i] & 0xf0);
+                PORTB &= ~0x08;
+
+                time_out = 0xfff;
+                while((time_out != 0) && (PINB & 0x04))
+                {
+                    time_out--;
+                }
+
+                if(time_out != 0)
+                {
+                    // Alles OK !!
+                }
+                else
+                {
+                    // Error !
+                    transfer_status = 0;
+                    error_flag = 1;
+                }
+            }
+            else
+            {
+                // Error !
+                transfer_status = 0;
+                error_flag = 1;
+            }
+        }
+
+        block_anzahl--;
+        if(block_anzahl == 0) transfer_status = 0;
+
+    break;
+    }
+}
+/* ------------------------------------------------------------------------- */
+
 /* usbFunctionWrite() wird aufgerufen wenn der Host Daten Senden möchte */
 uchar   usbFunctionWrite(uchar *data, uchar len)
 {
-    uint8_t i;
+    if(bytesRemaining == 0) return 1;                       /* end of transfer */
+
+    if(len > bytesRemaining) len = bytesRemaining;
+
+    uchar i;
 
     for(i=0;i<len;i++)
     {
-        PORTB = (PORTB & 0xf0) | (data[i] & 0x0f);
-        PORTD = (PORTD & 0x0f) | (data[i] & 0xf0);
+        buffer[currentAddress+i] = data[i];
     }
 
-    return 1;
-    /// In dieser Version muss der Host keine Daten senden
+    currentAddress += len;
+    bytesRemaining -= len;
+
+    if(bytesRemaining == 0)
+    {
+        // Letztes Paket erhalten
+        transfer_block();
+    }
+
+    return bytesRemaining == 0; /* return 1 if this was the last chunk */
 }
 
 /* ------------------------------------------------------------------------- */
@@ -95,12 +258,12 @@ usbRequest_t    *rq = (void *)data;
     if((rq->bmRequestType & USBRQ_TYPE_MASK) == USBRQ_TYPE_CLASS){    /* HID class request */
         if(rq->bRequest == USBRQ_HID_GET_REPORT){  /* wValue: ReportType (highbyte), ReportID (lowbyte) */
             /* since we have only one report type, we can ignore the report-ID */
-            bytesRemaining = 16;
+            bytesRemaining = 128;
             currentAddress = 0;
             return USB_NO_MSG;  /* use usbFunctionRead() to obtain data */
         }else if(rq->bRequest == USBRQ_HID_SET_REPORT){
             /* since we have only one report type, we can ignore the report-ID */
-            bytesRemaining = 16;
+            bytesRemaining = 128;
             currentAddress = 0;
             return USB_NO_MSG;  /* use usbFunctionWrite() to receive data from host */
         }
@@ -112,124 +275,20 @@ usbRequest_t    *rq = (void *)data;
 
 /* ------------------------------------------------------------------------- */
 
-/// Bezeichnug PORTA und PORTB kommt vom C64 ;) ///
-
-void setPORTA(uint8_t value)
+void error_poll(void)
 {
-    /*
-    // Bit0
-    OUTPORT(PA0N) &= ~(0x01<<PA0P);
-    OUTPORT(PA0N) |= ((~value >> 0) & 0x01)<<PA0P;
-    // Bit1
-    OUTPORT(PA1N) &= ~(0x01<<PA1P);
-    OUTPORT(PA1N) |= ((~value >> 1) & 0x01)<<PA1P;
-    // Bit2
-    OUTPORT(PA2N) &= ~(0x01<<PA2P);
-    OUTPORT(PA2N) |= ((~value >> 2) & 0x01)<<PA2P;
-    // Bit3
-    OUTPORT(PA3N) &= ~(0x01<<PA3P);
-    OUTPORT(PA3N) |= ((~value >> 3) & 0x01)<<PA3P;
-    // Bit4
-    OUTPORT(PA4N) &= ~(0x01<<PA4P);
-    OUTPORT(PA4N) |= ((~value >> 4) & 0x01)<<PA4P;
-    // Bit5
-    OUTPORT(PA5N) &= ~(0x01<<PA5P);
-    OUTPORT(PA5N) |= ((~value >> 5) & 0x01)<<PA5P;
-    // Bit6
-    OUTPORT(PA6N) &= ~(0x01<<PA6P);
-    OUTPORT(PA6N) |= ((~value >> 6) & 0x01)<<PA6P;
-    // Bit7
-    OUTPORT(PA7N) &= ~(0x01<<PA7P);
-    OUTPORT(PA7N) |= ((~value >> 7) & 0x01)<<PA7P;
-    */
+    if(error_flag == 0) return;
+    if(led_blink_counter & 0x8000)
+        PORTD |= 0x01;
+    else PORTD &= 0xfe;
+
+    led_blink_counter++;
 }
-
-/* ------------------------------------------------------------------------- */
-
-uint8_t getPORTB()
-{
-    uint8_t value = 0;
-
-    /*
-    // Bit0
-    value |= ((INPORT(PB0N)>>PB0P)&0x01);
-    // Bit1
-    value |= ((INPORT(PB1N)>>PB1P)&0x01)<<1;
-    // Bit2
-    value |= ((INPORT(PB2N)>>PB2P)&0x01)<<2;
-    // Bit3
-    value |= ((INPORT(PB3N)>>PB3P)&0x01)<<3;
-    // Bit4
-    value |= ((INPORT(PB4N)>>PB4P)&0x01)<<4;
-    // Bit5
-    value |= ((INPORT(PB5N)>>PB5P)&0x01)<<5;
-    // Bit6
-    value |= ((INPORT(PB6N)>>PB6P)&0x01)<<6;
-    // Bit7
-    value |= ((INPORT(PB7N)>>PB7P)&0x01)<<7;
-    */
-    return ~value;
-}
-
-void keyPoll(void)
-{
-    /*
-    uint8_t BitMask = 0x01;
-    uint8_t i = 0;
-
-    setPORTA(0xFF);
-    _delay_us(10);
-
-    if(getPORTB() != 0x00)
-    {
-        /// Mind. eine Taste der 8x8 Matrix ist gedrückt ///
-        LEDOn();
-
-        /// Prüfen auf RESTORE ///
-        if(~INPORT(RESTORE_N) & (1 << RESTORE_P))
-        {
-            /// RESTORE ist gedrückt ///
-            key_buffer[8] = 0x01;
-        }
-        else
-        {
-            /// RESTORE ist nicht gedrückt ///
-            key_buffer[8] = 0x00;
-        }
-    }
-    else
-    {
-        /// Prüfen auf RESTORE ///
-        if(~INPORT(RESTORE_N) & (1 << RESTORE_P))
-        {
-            LEDOn();
-            /// RESTORE ist gedrückt ///
-            key_buffer[8] = 0x01;
-        }
-        else
-        {
-            LEDOff();
-            /// RESTORE ist nicht gedrückt ///
-            key_buffer[8] = 0x00;
-        }
-    }
-
-    for(i=0;i<8;i++)
-    {
-        setPORTA(BitMask);
-        _delay_us(10);
-        key_buffer[i] = getPORTB();
-        BitMask <<= 1;
-    }
-    */
-}
-
-/* ------------------------------------------------------------------------- */
 
 int main(void)
 {
-    // PortB Pin 0-3 auf Ausgan setzen
-    DDRB |= 0x0f;
+    // PortB Pin 3 auf Ausgang setzen
+    DDRB |= 0x08;
 
     // PortD Pin 4-7 und Pin 0 auf Ausgang setzen
     DDRD |= 0xf1;
@@ -239,9 +298,9 @@ int main(void)
 
     uchar   i;
     // key_buffer löschen
-    for(i=0;i<16;i++)
+    for(i=0;i<2;i++)
     {
-        key_buffer[i] = 0x00;
+        buffer[i] = 0x00;
     }
 
     // Startmeldung mittels Blinken 5x
@@ -268,7 +327,7 @@ int main(void)
     for(;;){                // Endlosschleife
         wdt_reset();
         usbPoll();
-        //keyPoll();
+        error_poll();
     }
     return 0;
 }

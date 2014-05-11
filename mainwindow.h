@@ -21,6 +21,8 @@ public:
 private slots:
     void on_scroll_wert_valueChanged(int value);
 
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     Lan64USBClass *lan64;

@@ -58,3 +58,52 @@ bool Lan64USBClass::Open()
 
     return isUSBOpen;
 }
+
+bool Lan64USBClass::SendBuffer()
+{
+    int err;
+
+    buffer[0] = 0;
+    buffer[1] = 0;
+
+    if((err = usbhidSetReport(dev,(char*)buffer, sizeof(buffer))) != 0)
+    {
+        fprintf(stderr, "error reading data: %s\n", usbErrorMessage(err));
+        return false;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void Lan64USBClass::SendHeader()
+{
+    unsigned short Startadresse = 0xC000;
+    unsigned short Size = 120;
+
+    buffer[0+2]=0;
+    buffer[1+2]=(unsigned char)Startadresse;
+    buffer[2+2]=Startadresse>>8;
+    buffer[3+2]=(unsigned char)Size;
+    buffer[4+2]=Size>>8;
+    buffer[6+2]=Startadresse+Size;
+    buffer[7+2]=(Startadresse+Size)>>8;
+
+    unsigned char temp=Size/256;
+    if((Size-(temp*256))>0) temp++;
+
+    buffer[5+2]=temp;
+
+    /// Hader senden
+    SendBuffer();
+    for(int i=0;i<128;i++) buffer[i+2] = 0;
+    SendBuffer();
+
+
+    for(int i=0;i<128;i++) buffer[i+2] = i;
+    SendBuffer();
+    for(int i=0;i<128;i++) buffer[i+2] = i+128;
+    SendBuffer();
+}
+

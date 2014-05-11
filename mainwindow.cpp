@@ -28,3 +28,8 @@ void MainWindow::on_scroll_wert_valueChanged(int value)
 {
     ui->wert_out->setText(QVariant(value).toString());
 }
+
+void MainWindow::on_pushButton_clicked()
+{
+    lan64->SendHeader();
+}

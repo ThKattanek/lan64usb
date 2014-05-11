@@ -25,7 +25,7 @@ cls	= $e544 ; Bildschirm löschen
 
 	;***** Syncronisation mit dem PC ******
 
-	lda #%00000111	;Richtung für LAN64 des PortB setzen
+        lda #%00000111          ;Richtung für LAN64 des PortB setzen
 	sta $dd03
 
 	lda #00
@@ -109,9 +109,9 @@ read_byte
 
 wait_lo_byte
 
-	lda $dd01
-	and #%00001000
-	beq wait_lo_byte
+        lda $dd01
+        and #%00001000
+        beq wait_lo_byte
 
 	lda $dd01
 	lsr
