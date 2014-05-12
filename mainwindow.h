@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include "lan64usb.h"
 
@@ -19,9 +20,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_scroll_wert_valueChanged(int value);
-
-    void on_pushButton_clicked();
+    void on_SendPRG_clicked();
 
 private:
     Ui::MainWindow *ui;

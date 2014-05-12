@@ -6,54 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>123</height>
+    <width>370</width>
+    <height>97</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Lan64 Tool</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QScrollBar" name="scroll_wert">
+   <widget class="QPushButton" name="SendPRG">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>331</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="maximum">
-     <number>255</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QLabel" name="wert_out">
-    <property name="geometry">
-     <rect>
-      <x>350</x>
-      <y>10</y>
-      <width>45</width>
-      <height>16</height>
+      <width>111</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>40</y>
-      <width>71</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Sync Test</string>
+     <string>PRG an C64 senden</string>
     </property>
    </widget>
   </widget>
@@ -62,7 +33,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>370</width>
      <height>16</height>
     </rect>
    </property>

@@ -6,7 +6,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->wert_out->setText("0");
 
     // USB Gerät öffnen
     lan64 = new Lan64USBClass();
@@ -24,12 +23,14 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_scroll_wert_valueChanged(int value)
+void MainWindow::on_SendPRG_clicked()
 {
-    ui->wert_out->setText(QVariant(value).toString());
-}
-
-void MainWindow::on_pushButton_clicked()
-{
-    lan64->SendHeader();
+    QString filename = QFileDialog::getOpenFileName(this,tr("C64 Dateie öffnen "),"",tr("C64 Programm Dateien") + "(*.prg);;" + tr("Alle Dateien") + "(*.*)");
+    if(filename != "")
+    {
+        if(!lan64->SendPRG(filename.toLatin1().data()))
+        {
+            QMessageBox::warning(this,"Error...","Datei konnte nicht übertragen werden.");
+        }
+    }
 }

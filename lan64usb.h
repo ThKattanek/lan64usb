@@ -16,8 +16,9 @@ public:
     bool Open();
     void Update();
     bool GetRestoreStatus();
-
     void SendHeader(void);
+
+    int SendPRG(char* filename);
 
 private:
     bool SendBuffer();
@@ -28,6 +29,7 @@ private:
     bool readKeys();
     bool isUSBOpen;
     unsigned char buffer[129];  // Puffergröße + 1 [0] enthält normalerweise die Report ID (Beim auswerten berücksichtigen)
+    unsigned char prg_buffer[0x10000];
 };
 
 #endif // LAN64USB_H
