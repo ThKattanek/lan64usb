@@ -64,7 +64,6 @@ bool Lan64USBClass::SendBuffer()
     int err;
 
     buffer[0] = 0;
-    buffer[1] = 0;
 
     if((err = usbhidSetReport(dev,(char*)buffer, sizeof(buffer))) != 0)
     {
@@ -79,31 +78,31 @@ bool Lan64USBClass::SendBuffer()
 
 void Lan64USBClass::SendHeader()
 {
-    unsigned short Startadresse = 0xC000;
-    unsigned short Size = 120;
+    unsigned short Startadresse = 0x0800;
+    unsigned short Size = 51199;
 
-    buffer[0+2]=0;
-    buffer[1+2]=(unsigned char)Startadresse;
-    buffer[2+2]=Startadresse>>8;
-    buffer[3+2]=(unsigned char)Size;
-    buffer[4+2]=Size>>8;
-    buffer[6+2]=Startadresse+Size;
-    buffer[7+2]=(Startadresse+Size)>>8;
+    for(int i=0;i<128;i++) buffer[i+1] = 0;
 
-    unsigned char temp=Size/256;
-    if((Size-(temp*256))>0) temp++;
-
-    buffer[5+2]=temp;
+    buffer[0+1]=0;
+    buffer[1+1]=(unsigned char)Startadresse;
+    buffer[2+1]=Startadresse>>8;
+    buffer[3+1]=(unsigned char)Size;
+    buffer[4+1]=Size>>8;
+    buffer[5+1]=Size>>8;
+    if((Size-(buffer[5+1]<<8))>0) buffer[5+1]++;
+    buffer[6+1]=Startadresse+Size;
+    buffer[7+1]=(Startadresse+Size)>>8;
 
     /// Hader senden
-    SendBuffer();
-    for(int i=0;i<128;i++) buffer[i+2] = 0;
-    SendBuffer();
+    SendBuffer();   // 1.128Byte
+    SendBuffer();   // 2.128Byte
 
+    for(int i=0;i<128;i++) buffer[i+1] = i;
 
-    for(int i=0;i<128;i++) buffer[i+2] = i;
-    SendBuffer();
-    for(int i=0;i<128;i++) buffer[i+2] = i+128;
-    SendBuffer();
+    for(int i=0; i<200; i++)
+    {
+        SendBuffer();
+        SendBuffer();
+    }
 }
 

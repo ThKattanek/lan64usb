@@ -27,7 +27,7 @@ private:
     char *usbErrorMessage(int errCode);
     bool readKeys();
     bool isUSBOpen;
-    unsigned char buffer[130];  // Puffergröße + 2 [0] und [1] enthält normalerweise die Report ID (Beim auswerten berücksichtigen)
+    unsigned char buffer[129];  // Puffergröße + 1 [0] enthält normalerweise die Report ID (Beim auswerten berücksichtigen)
 };
 
 #endif // LAN64USB_H

@@ -37,7 +37,7 @@ PROGMEM const char usbHidReportDescriptor[22] = {    /// USB Report descriptor
     0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
     0x26, 0xff, 0x00,              //   LOGICAL_MAXIMUM (255)
     0x75, 0x08,                    //   REPORT_SIZE (8)
-    0x95, 0x10,                    //   REPORT_COUNT (16)
+    0x95, 0x80,                    //   REPORT_COUNT (128)
     0x09, 0x00,                    //   USAGE (Undefined)
     0xb2, 0x02, 0x01,              //   FEATURE (Data,Var,Abs,Buf)
     0xc0                           //   END_COLLECTION
@@ -91,34 +91,79 @@ void transfer_block(void)
         transfer_status = 1;
         error_flag = 0;             // Fehler zurücksetzen
 
-        // Syncronisieren mit C64
-        // C64 PORTB Eingänge auf 1 setzen (PIN 3-7)
-        PORTB |= 0x08;
-        PORTD |= 0xf0;
+        ////////////////////// Syncronisieren mit C64 Start ///////////////////////
+        ///////////////////////////////////////////////////////////////////////////
+
+        // C64 PORTB Eingänge auf 0 setzen (PIN 3-7)
+        PORTB &= ~0x08;
+        PORTD &= ~0xf0;
 
         // Warten auf C64 PORTB Ausgänge 0 (PIN 0-2)
-
         time_out = 0xfff;
-        while((time_out != 0) && !(PINB & 0x07))
+        while((time_out != 0) && !((PINB & 0x07) == 0x00))
         {
             time_out--;
         }
 
         if(time_out != 0)
         {
-            // C64 PORTB Eingänge auf 0 setzen (PIN 3-7)
-            PORTB &= ~0x08;
-            PORTD &= ~0xf0;
+            // C64 PORTB Eingänge auf 1 setzen (PIN 3-7)
+            PORTB |= 0x08;
+            PORTD |= 0xf0;
+
+            // Warten auf C64 PORTB Ausgänge 1 (PIN 0-2)
+            time_out = 0xfff;
+            while((time_out != 0) && !((PINB & 0x07) == 0x07))
+            {
+                time_out--;
+            }
+
+            if(time_out != 0)
+            {
+                // C64 PORTB Eingänge auf 0 setzen (PIN 3-7)
+                PORTB &= ~0x08;
+                PORTD &= ~0xf0;
+
+                // Warten auf C64 PORTB Ausgänge 0 (PIN 0-2)
+                time_out = 0xfff;
+                while((time_out != 0) && !((PINB & 0x07) == 0x00))
+                {
+                    time_out--;
+                }
+
+                if(time_out != 0)
+                {
+
+                }
+
+                else
+                {
+                    // Error !
+                    transfer_status = 0;
+                    error_flag = 1;
+                    return;
+                }
+            }
+            else
+            {
+                // Error !
+                transfer_status = 0;
+                error_flag = 1;
+                return;
+            }
         }
         else
         {
             // Error !
             transfer_status = 0;
             error_flag = 1;
+            return;
         }
 
-        // buffer an C64 übertragen
-        // LowNibble auf PORT legen
+        ////////////////////// Syncronisieren mit C64 Ende ///////////////////////
+        ///////////////////////////////////////////////////////////////////////////
+
+        /// 1. 128 Bytes des Headers übertragen ///
 
         for(i=0;i<128;i++)
         {
@@ -165,9 +210,7 @@ void transfer_block(void)
                 break;
             }
         }
-
         block_anzahl--;
-
     break;
 
     case 1:
