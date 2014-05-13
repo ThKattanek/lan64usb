@@ -140,6 +140,8 @@ void transfer_block(void)
                 {
                     // Error !
                     transfer_status = 0;
+                    PORTB = 0;
+                    PORTD &= 0x0f;
                     error_flag = 1;
                     return;
                 }
@@ -148,6 +150,8 @@ void transfer_block(void)
             {
                 // Error !
                 transfer_status = 0;
+                PORTB = 0;
+                PORTD &= 0x0f;
                 error_flag = 1;
                 return;
             }
@@ -156,6 +160,8 @@ void transfer_block(void)
         {
             // Error !
             transfer_status = 0;
+            PORTB = 0;
+            PORTD &= 0x0f;
             error_flag = 1;
             return;
         }
@@ -198,16 +204,20 @@ void transfer_block(void)
                 {
                     // Error !
                     transfer_status = 0;
+                    PORTB = 0;
+                    PORTD &= 0x0f;
                     error_flag = 1;
-                    break;
+                    return;
                 }
             }
             else
             {
                 // Error !
                 transfer_status = 0;
+                PORTB = 0;
+                PORTD &= 0x0f;
                 error_flag = 1;
-                break;
+                return;
             }
         }
         block_anzahl--;
@@ -247,14 +257,20 @@ void transfer_block(void)
                 {
                     // Error !
                     transfer_status = 0;
+                    PORTB = 0;
+                    PORTD &= 0x0f;
                     error_flag = 1;
+                    return;
                 }
             }
             else
             {
                 // Error !
                 transfer_status = 0;
+                PORTB = 0;
+                PORTD &= 0x0f;
                 error_flag = 1;
+                return;
             }
         }
 
