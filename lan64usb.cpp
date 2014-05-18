@@ -113,7 +113,7 @@ int Lan64USBClass::SendPRG(char* filename)
     SendBuffer();   // 2.128Byte
 
 
-    /// Programm übertragen
+    /// Programm Ã¼bertragen
 
     int Blockanzahl = buffer[5+1]<<1;
     int ProgZeiger = 0;

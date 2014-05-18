@@ -12,7 +12,7 @@
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include <avr/pgmspace.h>   /* benötigt von usbdrv.h */
+#include <avr/pgmspace.h>   /* benÃ¶tigt von usbdrv.h */
 #include "usbdrv.h"
 
 //#define CONCAT(a, b)            a ## b
@@ -43,20 +43,20 @@ PROGMEM const char usbHidReportDescriptor[22] = {    /// USB Report descriptor
     0xc0                           //   END_COLLECTION
 };
 /* Da wir nur ein Feature Report definieren, verwenden wir keine Report-ID's
- * Dies würde das erste Byte des Berichts sein, der Gesamte Bereich besteht aus
+ * Dies wÃ¼rde das erste Byte des Berichts sein, der Gesamte Bereich besteht aus
  * 16 Festdefinierten Daten Bytes
 
  0x00 - 0x07    = PortB Eingangswerte bei jew. gesetztem PortA Ausgangswert (C64 Key Matrix)
- 0x08           = RESTORE Status (0 = nicht gedrückt; 1 = gedrückt)
- 0x09 - 0x0F    = nicht benutzt (reserviert f. nächste Versione) */
+ 0x08           = RESTORE Status (0 = nicht gedrÃ¼ckt; 1 = gedrÃ¼ckt)
+ 0x09 - 0x0F    = nicht benutzt (reserviert f. nÃ¤chste Versione) */
 
-/* Diese Variablen steuern die aktuelle Datenübertragung  */
+/* Diese Variablen steuern die aktuelle DatenÃ¼bertragung  */
 static uchar    currentAddress;
 static uchar    bytesRemaining;
 
 /* ------------------------------------------------------------------------- */
 
-/* usbFunctionRead() wird aufgerufen wenn der Host Daten Empfangen möchte */
+/* usbFunctionRead() wird aufgerufen wenn der Host Daten Empfangen mÃ¶chte */
 uchar usbFunctionRead(uchar *data, uchar len)
 {
     /*
@@ -89,16 +89,16 @@ void transfer_block(void)
 
         block_anzahl = (buffer[5]+1)<<1;
         transfer_status = 1;
-        error_flag = 0;             // Fehler zurücksetzen
+        error_flag = 0;             // Fehler zurÃ¼cksetzen
 
         ////////////////////// Syncronisieren mit C64 Start ///////////////////////
         ///////////////////////////////////////////////////////////////////////////
 
-        // C64 PORTB Eingänge auf 0 setzen (PIN 3-7)
+        // C64 PORTB EingÃ¤nge auf 0 setzen (PIN 3-7)
         PORTB &= ~0x08;
         PORTD &= ~0xf0;
 
-        // Warten auf C64 PORTB Ausgänge 0 (PIN 0-2)
+        // Warten auf C64 PORTB AusgÃ¤nge 0 (PIN 0-2)
         time_out = 0xfff;
         while((time_out != 0) && !((PINB & 0x07) == 0x00))
         {
@@ -107,11 +107,11 @@ void transfer_block(void)
 
         if(time_out != 0)
         {
-            // C64 PORTB Eingänge auf 1 setzen (PIN 3-7)
+            // C64 PORTB EingÃ¤nge auf 1 setzen (PIN 3-7)
             PORTB |= 0x08;
             PORTD |= 0xf0;
 
-            // Warten auf C64 PORTB Ausgänge 1 (PIN 0-2)
+            // Warten auf C64 PORTB AusgÃ¤nge 1 (PIN 0-2)
             time_out = 0xfff;
             while((time_out != 0) && !((PINB & 0x07) == 0x07))
             {
@@ -120,11 +120,11 @@ void transfer_block(void)
 
             if(time_out != 0)
             {
-                // C64 PORTB Eingänge auf 0 setzen (PIN 3-7)
+                // C64 PORTB EingÃ¤nge auf 0 setzen (PIN 3-7)
                 PORTB &= ~0x08;
                 PORTD &= ~0xf0;
 
-                // Warten auf C64 PORTB Ausgänge 0 (PIN 0-2)
+                // Warten auf C64 PORTB AusgÃ¤nge 0 (PIN 0-2)
                 time_out = 0xfff;
                 while((time_out != 0) && !((PINB & 0x07) == 0x00))
                 {
@@ -169,7 +169,7 @@ void transfer_block(void)
         ////////////////////// Syncronisieren mit C64 Ende ///////////////////////
         ///////////////////////////////////////////////////////////////////////////
 
-        /// 1. 128 Bytes des Headers übertragen ///
+        /// 1. 128 Bytes des Headers Ã¼bertragen ///
 
         for(i=0;i<128;i++)
         {
@@ -282,7 +282,7 @@ void transfer_block(void)
 }
 /* ------------------------------------------------------------------------- */
 
-/* usbFunctionWrite() wird aufgerufen wenn der Host Daten Senden möchte */
+/* usbFunctionWrite() wird aufgerufen wenn der Host Daten Senden mÃ¶chte */
 uchar   usbFunctionWrite(uchar *data, uchar len)
 {
     if(bytesRemaining == 0) return 1;                       /* end of transfer */
@@ -356,7 +356,7 @@ int main(void)
     PORTD &= 0x0f;
 
     uchar   i;
-    // key_buffer löschen
+    // key_buffer lÃ¶schen
     for(i=0;i<2;i++)
     {
         buffer[i] = 0x00;
@@ -376,7 +376,7 @@ int main(void)
     usbInit();
     usbDeviceDisconnect();  // neues auflisten erzwingen, solange der Interrupt deaktiviert ist!
     i = 0;
-    while(--i){             // Fake USB Disconnect für > 250 ms
+    while(--i){             // Fake USB Disconnect fÃ¼r > 250 ms
         wdt_reset();
         _delay_ms(1);
     }

@@ -28,7 +28,7 @@ private:
     char *usbErrorMessage(int errCode);
     bool readKeys();
     bool isUSBOpen;
-    unsigned char buffer[129];  // Puffergröße + 1 [0] enthält normalerweise die Report ID (Beim auswerten berücksichtigen)
+    unsigned char buffer[129];  // PuffergrÃ¶ÃŸe + 1 [0] enthÃ¤lt normalerweise die Report ID (Beim auswerten berÃ¼cksichtigen)
     unsigned char prg_buffer[0x10000];
 };
 

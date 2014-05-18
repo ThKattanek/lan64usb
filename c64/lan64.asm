@@ -1,7 +1,7 @@
 ;*********************************************
 ;  LAN64 Version 2.0
 ;  By Thorsten Kattanek
-;  März 2009
+;  MÃ¤rz 2009
 
 	.save m:\lan64_2_easy
 	;.basicloader lan64_2_easy_basicloader.txt
@@ -12,7 +12,7 @@ header  = $8000
 intout 	= $bdcd ; Positive Integer Zahl ausgeben (XR/AC)
 txtout	= $ab24 ; Textausgeben, anzahl der Zeichen muss im Accu stehen ($22/$23 Adresse des Textes)
 ascout	= $ab47 ; Ausgabe eines Asscii Zeichens das im Accu sein muss
-cls	= $e544 ; Bildschirm löschen
+cls	= $e544 ; Bildschirm lÃ¶schen
 
 
 	sei
@@ -25,28 +25,28 @@ cls	= $e544 ; Bildschirm löschen
 
 	;***** Syncronisation mit dem PC ******
 
-        lda #%00000111          ;Richtung für LAN64 des PortB setzen
+        lda #%00000111          ;Richtung fÃ¼r LAN64 des PortB setzen
 	sta $dd03
 
 	lda #00
 	sta $dd01		;Portregister B von CIA2 auf Null setzen
 
 wait		
-	lda $dd01		;Warten bis alle Eingänge auf 1 sind
+	lda $dd01		;Warten bis alle EingÃ¤nge auf 1 sind
 	and #%11111000
 	cmp #%11111000
 	bne wait
 
-	lda #%00000111		;Alle Ausgänge auf 1 stellen
+	lda #%00000111		;Alle AusgÃ¤nge auf 1 stellen
 	sta $dd01
 
 wait1		
-	lda $dd01		;Warten bis alle Eingänge auf 0 sind
+	lda $dd01		;Warten bis alle EingÃ¤nge auf 0 sind
 	and #%11111000
 	cmp #%00000000
 	bne wait1
 
-	;lda #0			;Alle Ausgänge auf 0 stellen
+	;lda #0			;Alle AusgÃ¤nge auf 0 stellen
 				;Acuu ist in jedem fall 0
 	sta $dd01
 
@@ -81,7 +81,7 @@ l1
 	sta $af
 
 
-	;******* Daten Blöcke übertragen *********
+	;******* Daten BlÃ¶cke Ã¼bertragen *********
 	ldy #0
 	ldx header+5
 	lda header+1
