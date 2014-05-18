@@ -25,12 +25,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_SendPRG_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,tr("C64 Dateie öffnen "),"",tr("C64 Programm Dateien") + "(*.prg);;" + tr("Alle Dateien") + "(*.*)");
+    QString filename = QFileDialog::getOpenFileName(this,tr("C64 Dateie öffnen "),"",tr("C64 Programm Dateien") + "(*.prg);" + "(*.c64);;" + tr("Alle Dateien") + "(*.*)");
     if(filename != "")
     {
         if(!lan64->SendPRG(filename.toLatin1().data()))
         {
-            QMessageBox::warning(this,"Error...","Datei konnte nicht übertragen werden.");
+            //QMessageBox::warning(this,"Error...","Datei konnte nicht übertragen werden.");
         }
     }
 }
