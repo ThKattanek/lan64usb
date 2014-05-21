@@ -25,7 +25,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_SendPRG_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,tr("C64 Dateie öffnen "),"",tr("C64 Programm Dateien") + "(*.prg);" + "(*.c64);;" + tr("Alle Dateien") + "(*.*)");
+    QString filename = QFileDialog::getOpenFileName(this,"C64 Datei öffnen","","C64 Programm Dateien (*.prg *.c64);;Alle Dateien(*.*)");
     if(filename != "")
     {
         if(!lan64->SendPRG(filename.toLatin1().data()))
