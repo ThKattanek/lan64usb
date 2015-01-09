@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "hiddata.h"
-#include "firmware/usbconfig.h"  /* for device VID, PID, vendor name and product name */
+#include "../firmware/usbconfig.h"  /* for device VID, PID, vendor name and product name */
 
 class Lan64USBClass
 {
