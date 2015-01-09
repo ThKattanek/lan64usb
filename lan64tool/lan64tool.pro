@@ -13,11 +13,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    lan64tool.cpp \
+    lan64usb_class.cpp \
     hiddata.c
 
 HEADERS  += mainwindow.h \
-    lan64tool.h \
+    lan64usb_class.h \
     hiddata.h
 
 FORMS    += mainwindow.ui

@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
-#include "lan64tool.h"
+#include "lan64usb_class.h"
 
 namespace Ui {
 class MainWindow;

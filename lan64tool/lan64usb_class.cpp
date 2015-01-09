@@ -1,4 +1,4 @@
-#include "lan64tool.h"
+#include "lan64usb_class.h"
 
 Lan64USBClass::Lan64USBClass()
 {
