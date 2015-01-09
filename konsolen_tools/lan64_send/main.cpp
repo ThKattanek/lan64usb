@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string.h>
 
+#include "../../lan64tool/lan64usb_class.h"
+
 using namespace std;
 
 void help_out(void);
@@ -9,7 +11,8 @@ int main(int argc, char *argv[])
 {
     /// Comandline auswerten ///
 
-    bool error = false;
+    Lan64USBClass *lan64;
+    bool Lan64USB_Enabled = false;
 
     if(argc > 1)
     {
@@ -32,8 +35,23 @@ int main(int argc, char *argv[])
         return (0);
     }
 
+    // Lan64 USB öffnen
+    lan64 = new Lan64USBClass();
+    Lan64USB_Enabled = lan64->Open();
 
     // Datei Übertragen
+    if(!Lan64USB_Enabled)
+    {
+        cout << endl << "Es konnte kein Lan64USB Adapter gefunden werden.\nBitte überprüfen Sie ob das Gerät eingesteckt ist,\noder ob Sie über genügend Rechte verfügen." << endl;
+        return (0);
+    }
+
+    if(0x01 == lan64->SendPRG(argv[1]))
+    {
+        cout << endl << "Die Datei konnte nicht geoeffnet werden." << endl;
+    }
+
+    delete lan64;
 }
 
 void help_out(void)

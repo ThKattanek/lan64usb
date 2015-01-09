@@ -13,7 +13,9 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    ../../lan64tool/lan64usb_class.cpp \
+    ../../lan64tool/hiddata.c
 
 linux-g++-32{
 TARGET = lan64_send
@@ -32,3 +34,6 @@ TARGET = lan64_send
 DESTDIR = "../../bin/win_x32"
 LIBS += -lhid -lsetupapi
 }
+
+HEADERS += \
+    ../../lan64tool/hiddata.h
