@@ -10,7 +10,7 @@ DEVICE  = atmega8
 F_CPU   = 12000000	# in Hz
 FUSE_L  = 0x9f
 FUSE_H  = 0xc9
-AVRDUDE = avrdude -P usb -c avrispmkII -p $(DEVICE) # edit this line for your programmer
+AVRDUDE = avrdude -B 4 -P usb -c avrispmkII -p $(DEVICE) # edit this line for your programmer
 
 CFLAGS  = -Iusbdrv -I. -DDEBUG_LEVEL=0
 OBJECTS = usbdrv/usbdrv.o usbdrv/usbdrvasm.o usbdrv/oddebug.o main.o
