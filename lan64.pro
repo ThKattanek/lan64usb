@@ -1,6 +1,5 @@
 TEMPLATE = subdirs
 SUBDIRS =lan64tool \
-    konsolen_tools/lan64_send \
     konsolen_tools/lan64_send
 
 OTHER_FILES += \
