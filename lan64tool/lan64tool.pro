@@ -23,19 +23,25 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 
 linux-g++-32{
-DESTDIR = "../../bin/linux_32bit"
 TARGET = lan64tool
 LIBS += -lusb
 }
 
 linux-g++-64{
 TARGET = lan64tool
-DESTDIR = "../../bin/linux_64bit"
 LIBS += -lusb
 }
 
 win32-g++{
-TARGET = lan64tool
-DESTDIR = "../../bin/win_x32"
+# TARGET = lan64tool
 LIBS += -lhid -lsetupapi
+}
+
+# Installer
+
+linux-g++-64 | linux-g++-32 | linux-g++{
+
+target.path = /usr/bin/
+INSTALLS += target
+
 }

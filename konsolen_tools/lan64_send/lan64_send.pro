@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-TARGET = lan64_send
+TARGET = lan64-send
 CONFIG   += console
 CONFIG   -= app_bundle
 
@@ -18,22 +18,28 @@ SOURCES += main.cpp \
     ../../lan64tool/hiddata.c
 
 linux-g++-32{
-TARGET = lan64_send
-DESTDIR = "../../bin/linux_32bit"
+TARGET = lan64-send
 LIBS += -lusb
 }
 
 linux-g++-64{
-TARGET = lan64_send
-DESTDIR = "../../bin/linux_64bit"
+TARGET = lan64-send
 LIBS += -lusb
 }
 
 win32-g++{
-TARGET = lan64_send
-DESTDIR = "../../bin/win_x32"
+TARGET = lan64-send
 LIBS += -lhid -lsetupapi
 }
 
 HEADERS += \
     ../../lan64tool/hiddata.h
+
+# Installer
+
+linux-g++-64 | linux-g++-32 | linux-g++{
+
+target.path = /usr/bin/
+INSTALLS += target
+
+}
