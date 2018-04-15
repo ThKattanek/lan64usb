@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if(!Lan64USB_Enabled)
     {
-        QMessageBox::critical(this,"Lan64USB Adapter ...","Es konnte kein Lan64USB Adapter gefunden werden.\nBitte überprüfen Sie ob das Gerät eingesteckt ist,\noder ob Sie über genügend Rechte verfügen.");
+        QMessageBox::critical(this,trUtf8("Lan64USB Adapter ..."),trUtf8("Es konnte kein Lan64USB Adapter gefunden werden.\nBitte überprüfen Sie ob das Gerät eingesteckt ist,\noder ob Sie über genügend Rechte verfügen."));
         exit(0);
     }
 }
@@ -25,7 +25,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_SendPRG_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,"C64 Datei öffnen","","C64 Programm Dateien (*.prg *.c64);;Alle Dateien(*.*)");
+    QString filename = QFileDialog::getOpenFileName(this,trUtf8("C64 Datei öffnen"),"",trUtf8("C64 Programm Dateien (*.prg *.c64);;Alle Dateien(*.*)"));
     if(filename != "")
     {
         if(!lan64->SendPRG(filename.toLatin1().data()))
