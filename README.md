@@ -33,7 +33,7 @@ make
 ## AVR Firmware erstellen und flashen
 ```bash
 cd ~/lan64usb/firmware
-make hex        // Erstellt das Binaryfile
-make program    // flasht das Binary auf den avr mit avrdude (evtl. anpassen an eueren Programmer)
-make clean      // alle wieder aufräumen
+make hex        // Erstellt das Binary
+make program    // Flasht das Binary auf den avr mit avrdude (evtl. anpassen an eueren Programmer)
+make clean      // Alles wieder aufräumen
 ```
