@@ -3,5 +3,3 @@
 *.o
 Makefile
 .directory
-lan64-send
-lan64tool
