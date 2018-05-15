@@ -123,7 +123,6 @@ flash: main.hex
 # rule for deleting dependent files (those which can be built by Make):
 clean:
 	rm -f main.hex main.lst main.obj main.cof main.list main.map main.eep.hex main.elf *.o usbdrv/*.o main.s usbdrv/oddebug.s usbdrv/usbdrv.s
-	rm -r usbdrv
 
 # Generic rule for compiling C files:
 .c.o:
@@ -143,10 +142,6 @@ clean:
 
 # file targets:
 
-# Since we don't want to ship the driver multipe times, we copy it into this project:
-usbdrv:
-	cp -r ../../usbdrv .
-
 main.elf: usbdrv $(OBJECTS)	# usbdrv dependency only needed because we copy it
 	$(COMPILE) -o main.elf $(OBJECTS)
 
@@ -155,7 +150,6 @@ main.hex: main.elf
 	avr-objcopy -j .text -j .data -O ihex main.elf main.hex
 	avr-size main.hex
 
-	rm -r usbdrv
 # debugging targets:
 
 disasm:	main.elf
