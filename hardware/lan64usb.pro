@@ -1,4 +1,4 @@
-update=Di 15 Mai 2018 19:07:34 CEST
+update=Di 15 Mai 2018 20:49:00 CEST
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,9 +23,11 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
+[general]
+version=1
 [eeschema]
 version=1
-LibDir=
+LibDir=/home/thorsten/Elektronik/KiCad Bauteile/kattanek/library;/home/thorsten/Elektronik/KiCad Bauteile/walter/library
 [eeschema/libraries]
 LibName1=power
 LibName2=device
@@ -59,5 +61,3 @@ LibName29=opto
 LibName30=atmel
 LibName31=contrib
 LibName32=valves
-[general]
-version=1

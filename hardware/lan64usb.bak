@@ -31,6 +31,7 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
+LIBS:lan64usb-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -40,9 +41,105 @@ Title "lan64usb"
 Date "2018-05-15"
 Rev "1.0.1"
 Comp ""
-Comment1 ""
+Comment1 "Erstellt von: Thorsten Kattanek"
 Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+$Comp
+L ATMEGA8-16AU U?
+U 1 1 5AFB2BDA
+P 5800 3500
+F 0 "U?" H 5050 4700 50  0000 L BNN
+F 1 "ATMEGA8-16AU" H 6300 1950 50  0000 L BNN
+F 2 "TQFP32" H 5800 3500 50  0001 C CIN
+F 3 "" H 5800 3500 50  0001 C CNN
+	1    5800 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR?
+U 1 1 5AFB2F75
+P 5800 2000
+F 0 "#PWR?" H 5800 1850 50  0001 C CNN
+F 1 "+5V" H 5800 2140 50  0000 C CNN
+F 2 "" H 5800 2000 50  0001 C CNN
+F 3 "" H 5800 2000 50  0001 C CNN
+	1    5800 2000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5750 2200 5750 2000
+Wire Wire Line
+	5750 2000 5850 2000
+Wire Wire Line
+	5850 2000 5850 2200
+Connection ~ 5800 2000
+$Comp
+L GND #PWR?
+U 1 1 5AFB2FA5
+P 5800 5250
+F 0 "#PWR?" H 5800 5000 50  0001 C CNN
+F 1 "GND" H 5800 5100 50  0000 C CNN
+F 2 "" H 5800 5250 50  0001 C CNN
+F 3 "" H 5800 5250 50  0001 C CNN
+	1    5800 5250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5750 5100 5750 5250
+Wire Wire Line
+	5750 5250 5850 5250
+Wire Wire Line
+	5850 5250 5850 5100
+Connection ~ 5800 5250
+$Comp
+L R R?
+U 1 1 5AFB3024
+P 4200 2500
+F 0 "R?" V 4280 2500 50  0000 C CNN
+F 1 "10k" V 4200 2500 50  0000 C CNN
+F 2 "" V 4130 2500 50  0001 C CNN
+F 3 "" H 4200 2500 50  0001 C CNN
+	1    4200 2500
+	0    1    1    0   
+$EndComp
+$Comp
+L +5V #PWR?
+U 1 1 5AFB30E3
+P 3700 2500
+F 0 "#PWR?" H 3700 2350 50  0001 C CNN
+F 1 "+5V" H 3700 2640 50  0000 C CNN
+F 2 "" H 3700 2500 50  0001 C CNN
+F 3 "" H 3700 2500 50  0001 C CNN
+	1    3700 2500
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3700 2500 4050 2500
+Wire Wire Line
+	4350 2500 4900 2500
+Text Label 4450 2500 0    60   ~ 0
+RESET
+Wire Wire Line
+	4900 2700 3850 2700
+Wire Wire Line
+	3850 2500 3850 2800
+Connection ~ 3850 2500
+Wire Wire Line
+	3850 2800 4900 2800
+Connection ~ 3850 2700
+$Comp
+L GND #PWR?
+U 1 1 5AFB32BD
+P 4750 2900
+F 0 "#PWR?" H 4750 2650 50  0001 C CNN
+F 1 "GND" H 4750 2750 50  0000 C CNN
+F 2 "" H 4750 2900 50  0001 C CNN
+F 3 "" H 4750 2900 50  0001 C CNN
+	1    4750 2900
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4750 2900 4900 2900
 $EndSCHEMATC
