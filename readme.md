@@ -11,7 +11,7 @@ git clone https://github.com/ThKattanek/lan64usb.git
 
 ## Erstellen der PC Anwendung "Lan64Tool"
 ```bash
-cd ~/lan64usb/pc-software/lan64tool/
+cd ~/lan64usb/pc-software/lan64tool
 mkdir build
 cd build
 qmake ..
