@@ -3,7 +3,7 @@
   (general
     (links 51)
     (no_connects 0)
-    (area 110.414999 75.489999 188.035001 109.930001)
+    (area 109.619999 75.489999 189.0466 110.305)
     (thickness 1.6)
     (drawings 6)
     (tracks 224)
@@ -1338,7 +1338,7 @@
   (gr_text "von thorsten kattanek" (at 171.45 102.235) (layer F.SilkS)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )
-  (gr_text "Lan64USB\nRev: 1.2.0" (at 179.705 79.375) (layer F.SilkS)
+  (gr_text "lan64usb\nRev.: 1.2.0" (at 179.705 79.375) (layer F.SilkS)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )
   (gr_line (start 187.96 75.565) (end 187.96 109.855) (angle 90) (layer Edge.Cuts) (width 0.15))

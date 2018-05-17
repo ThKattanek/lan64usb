@@ -1,6 +1,12 @@
 # Lan64USB
 Diese Hard- und Software ermöglicht den Transfer von Programmen vom PC zum Commodore 64 (C64).
 
+### Hardware / Schaltplan
+Die Hardware wurde mit KiCad entwickelt. Version 4.0.7 unter Ubuntu.
+
+
+![Screenshot](/hardware/lan64usb.png)
+
 ### Anleitung ist hier nur für Linux User !
 
 ## Vorraussetzungen
