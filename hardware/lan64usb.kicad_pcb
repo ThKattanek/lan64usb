@@ -3,7 +3,7 @@
   (general
     (links 51)
     (no_connects 0)
-    (area 109.619999 75.489999 189.0466 110.305)
+    (area 110.414999 75.489999 188.035001 109.930001)
     (thickness 1.6)
     (drawings 6)
     (tracks 224)
@@ -1333,6 +1333,11 @@
       (net 30 "Net-(J3-PadM)"))
     (pad N smd rect (at -21.725 -3) (size 2.6 5) (layers B.Cu B.Paste B.Mask)
       (net 2 GND))
+    (model kattanek/C64_USERPORT_STECKER.wrl
+      (at (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (gr_text "von thorsten kattanek" (at 171.45 102.235) (layer F.SilkS)

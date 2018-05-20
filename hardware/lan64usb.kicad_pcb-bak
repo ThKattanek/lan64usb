@@ -1333,12 +1333,17 @@
       (net 30 "Net-(J3-PadM)"))
     (pad N smd rect (at -21.725 -3) (size 2.6 5) (layers B.Cu B.Paste B.Mask)
       (net 2 GND))
+    (model kattanek/c64_user_port_stecker.wrl
+      (at (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (gr_text "von thorsten kattanek" (at 171.45 102.235) (layer F.SilkS)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )
-  (gr_text "Lan64USB\nRev: 1.2.0" (at 179.705 79.375) (layer F.SilkS)
+  (gr_text "lan64usb\nRev.: 1.2.0" (at 179.705 79.375) (layer F.SilkS)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )
   (gr_line (start 187.96 75.565) (end 187.96 109.855) (angle 90) (layer Edge.Cuts) (width 0.15))
