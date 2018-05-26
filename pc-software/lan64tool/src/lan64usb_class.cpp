@@ -2,17 +2,24 @@
 
 Lan64USBClass::Lan64USBClass()
 {
-    dev = NULL;
+    usb_device = NULL;
     isUSBOpen = false;
+
+    // LibUSB initialisieren
+    libusb_init(&libusb_ctx);
 }
 
 Lan64USBClass::~Lan64USBClass()
 {
+    /*
     usbhidCloseDevice(dev);
+    */
+    libusb_exit(libusb_ctx);
 }
 
-usbDevice_t *Lan64USBClass::openDevice(void)
+libusb_device* Lan64USBClass::openDevice(void)
 {
+    /*
 usbDevice_t     *dev = NULL;
 unsigned char   rawVid[2] = {USB_CFG_VENDOR_ID}, rawPid[2] = {USB_CFG_DEVICE_ID};
 char            vendorName[] = {USB_CFG_VENDOR_NAME, 0}, productName[] = {USB_CFG_DEVICE_NAME, 0};
@@ -26,10 +33,13 @@ int             err;
         return NULL;
     }
     return dev;
+    */
+    return NULL;
 }
 
 char *Lan64USBClass::usbErrorMessage(int errCode)
 {
+    /*
 static char buffer[80];
 
     switch(errCode)
@@ -41,11 +51,13 @@ static char buffer[80];
             sprintf(buffer, "Unknown USB error %d", errCode);
             return buffer;
     }
+    */
     return NULL;    /* not reached */
 }
 
 bool Lan64USBClass::Open()
 {
+    /*
     dev = openDevice();
     if(dev == NULL)
     {
@@ -57,10 +69,14 @@ bool Lan64USBClass::Open()
     }
 
     return isUSBOpen;
+    */
+
+    return false;
 }
 
 bool Lan64USBClass::SendBuffer()
 {
+    /*
     int err;
 
     buffer[0] = 0;
@@ -74,6 +90,7 @@ bool Lan64USBClass::SendBuffer()
     {
         return false;
     }
+    */
 }
 
 int Lan64USBClass::SendPRG(char* filename)

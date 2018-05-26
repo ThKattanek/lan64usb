@@ -136,7 +136,15 @@ set(SOURCES
     src/main.cpp
     src/mainwindow.cpp  
     src/lan64usb_class.cpp
-    src/hiddata.c
+
+    src/mainwindow.h
+    src/lan64usb_class.h
+)
+
+set(HEADERS
+    src/mainwindow.h
+    src/lan64usb_class.h
+    src/hiddata.h
 )
 
 ################## MOC HEADERS ####################
@@ -181,14 +189,13 @@ else()
 endif()
 
 # LibUSB
-find_package(LibUSB REQUIRED )
-if(LibUSB_FOUND)
-    set(LIBRARIES ${LIBRARIES} ${LibUSB_LIBRARIES})
-    include_directories(${LibUSB_INCLUDE_DIRS})
+find_package(LibUSB-1.0 REQUIRED )
+if(LIBUSB_1_FOUND)
+    set(LIBRARIES ${LIBRARIES} ${LIBUSB_1_LIBRARIES})
+    include_directories(${LIBUSB_1_INCLUDE_DIRS})
 else()
     message(FATAL_ERROR "LibUsb wurde nicht gefunden!")
 endif()
-
 
 # Für Windows
 #if(WIN32)
