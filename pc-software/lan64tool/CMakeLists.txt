@@ -198,20 +198,27 @@ else()
 endif()
 
 # Für Windows
-#if(WIN32)
-#    if(CMAKE_CROSSCOMPILING)
-#        message(STATUS "Windows Crosscompiling ...")
+if(WIN32)
+    if(CMAKE_CROSSCOMPILING)
+        message(STATUS "Windows Crosscompiling ...")
+
+        # QT
+        execute_process(
+          COMMAND ${PKG_CONFIG_EXECUTABLE} QtCore QtGui --libs
+          OUTPUT_VARIABLE QT4_LIBS
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
 
         # LIBUSB
-#        execute_process(
-#          COMMAND ${PKG_CONFIG_EXECUTABLE} libusb --libs
-#          OUTPUT_VARIABLE LIBUSB_LIBS
-#          OUTPUT_STRIP_TRAILING_WHITESPACE
-#        )
+        execute_process(
+          COMMAND ${PKG_CONFIG_EXECUTABLE} libusb-1.0 --libs
+          OUTPUT_VARIABLE LIBUSB_LIBS
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
         
-#        set(WIN_LIBRARIES ${WIN_LIBRARIES} ${QT4_LIBS} ${LIBUSB_LIBS} -lqtmain)
-#     endif()   
-#endif()
+        set(WIN_LIBRARIES ${WIN_LIBRARIES} ${QT4_LIBS} ${LIBUSB_LIBS})
+     endif()
+endif()
 
 ###################################################
 
