@@ -1,9 +1,12 @@
 # Lan64USB
 Diese Hard- und Software ermöglicht den Transfer von Programmen vom PC zum Commodore 64 (C64).
 
-### Hardware / Schaltplan
+### Hardware / Schaltplan / Treiber
 Die Hardware wurde mit KiCad entwickelt. Version 4.0.7 unter Ubuntu.
 
+Mit diesem Tool wird das Treiber Setup Programm erstellt. (LibUSB-Win32)
+
+https://sourceforge.net/projects/libusb-win32/files/libusbK-release/
 
 ![Screenshot](/hardware/lan64usb.png)
 
