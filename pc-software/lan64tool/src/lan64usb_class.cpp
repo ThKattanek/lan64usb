@@ -1,9 +1,24 @@
+//////////////////////////////////////////////////
+//                                              //
+// lan64tool                                    //
+// von Thorsten Kattanek                        //
+//                                              //
+// #file: lan64usb_class.cpp                    //
+//                                              //
+// Dieser Sourcecode ist Copyright geschützt!   //
+// Geistiges Eigentum von Th.Kattanek           //
+//                                              //
+// Letzte Änderung am 27.05.2018                //
+// www.emu64.de                                 //
+//                                              //
+//////////////////////////////////////////////////
+
 #include "lan64usb_class.h"
 
 Lan64USBClass::Lan64USBClass()
 {
     usb_device = NULL;
-    isUSBDeviceOpen = false;
+    isUSBDeviceOpen = false;  
 
     // LibUSB Session beginnen
     int ret = libusb_init(&libusb_ctx);
@@ -26,10 +41,12 @@ Lan64USBClass::~Lan64USBClass()
     libusb_exit(libusb_ctx);
 }
 
-libusb_device* Lan64USBClass::openDevice(const uint16_t idVendor,const uint16_t idProduct, const char* vendorName, const char* productName)
+libusb_device* Lan64USBClass::openDevice(const uint16_t idVendor,const uint16_t idProduct, const char* vendorName, const char* productName, int usesReportIDs)
 {
     libusb_device* usb_device;
     libusb_device_descriptor desc;
+
+    this->usesReportIDs = usesReportIDs;
 
     // USB Device anhand der Vendor und Protuct ID öffnen
     usb_device_handle = libusb_open_device_with_vid_pid(libusb_ctx, idVendor, idProduct);
@@ -92,22 +109,31 @@ void Lan64USBClass::closeDevice(libusb_device_handle *device_handle)
     libusb_close(device_handle);
 }
 
-char *Lan64USBClass::usbErrorMessage(int errCode)
+bool Lan64USBClass::sendBuffer()
 {
-    /*
-static char buffer[80];
+    int err;
 
-    switch(errCode)
+    unsigned char *buffer = this->buffer;
+    int len = sizeof(this->buffer);
+
+    if(!usesReportIDs)
     {
-        case USBOPEN_ERR_ACCESS:      return (char*)"Access to device denied";
-        case USBOPEN_ERR_NOTFOUND:    return (char*)"The specified device was not found";
-        case USBOPEN_ERR_IO:          return (char*)"Communication error with device";
-        default:
-            sprintf(buffer, "Unknown USB error %d", errCode);
-            return buffer;
+        buffer++;   // skip dummy report ID
+        len--;
     }
-    */
-    return NULL;    /* not reached */
+
+    int bytesSent = libusb_control_transfer(usb_device_handle, CONTROL_REQUEST_TYPE_OUT, HID_SET_REPORT, HID_REPORT_TYPE_FEATURE << 8, INTERFACE_NUMBER, buffer, len, TIMEOUT_MS);
+
+    if(bytesSent != len)
+    {
+        if(bytesSent < 0)
+        {
+            cerr << "Fehler beim senden." << endl;
+        }
+        return false;
+    }
+
+    return true;
 }
 
 bool Lan64USBClass::Open()
@@ -121,7 +147,8 @@ bool Lan64USBClass::Open()
     int             vendor_id = rawVid[0] + 256 * rawVid[1];
     int             product_id = rawPid[0] + 256 * rawPid[1];
 
-    usb_device = openDevice(vendor_id, product_id, vendorName, productName);
+    // Device öffnen
+    usb_device = openDevice(vendor_id, product_id, vendorName, productName, 0);
     if(usb_device == NULL)
     {
         isUSBDeviceOpen = false;
@@ -130,27 +157,7 @@ bool Lan64USBClass::Open()
     {
         isUSBDeviceOpen = true;
     }
-
     return isUSBDeviceOpen;
-}
-
-bool Lan64USBClass::SendBuffer()
-{
-    /*
-    int err;
-
-    buffer[0] = 0;
-
-    if((err = usbhidSetReport(dev,(char*)buffer, sizeof(buffer))) != 0)
-    {
-        fprintf(stderr, "error reading data: %s\n", usbErrorMessage(err));
-        return false;
-    }
-    else
-    {
-        return false;
-    }
-    */
 }
 
 int Lan64USBClass::SendPRG(char* filename)
@@ -186,8 +193,8 @@ int Lan64USBClass::SendPRG(char* filename)
     buffer[7+1]=(StartAdresse+Size)>>8;
 
     /// Hader senden
-    SendBuffer();   // 1.128Byte
-    SendBuffer();   // 2.128Byte
+    sendBuffer();   // 1.128Byte
+    sendBuffer();   // 2.128Byte
 
 
     /// Programm übertragen
@@ -199,41 +206,8 @@ int Lan64USBClass::SendPRG(char* filename)
     {
         for(int ii=0;ii<128;ii++)
             buffer[ii+1] = prg_buffer[ProgZeiger + ii];
-        SendBuffer();
+        sendBuffer();
         ProgZeiger += 128;
     }
-
-
     return 0;
 }
-
-void Lan64USBClass::SendHeader()
-{
-    unsigned short StartAdresse = 0x0800;
-    unsigned short Size = 51199;
-
-    for(int i=0;i<128;i++) buffer[i+1] = 0;
-
-    buffer[0+1]=0;
-    buffer[1+1]=(unsigned char)StartAdresse;
-    buffer[2+1]=StartAdresse>>8;
-    buffer[3+1]=(unsigned char)Size;
-    buffer[4+1]=Size>>8;
-    buffer[5+1]=Size>>8;
-    if((Size-(buffer[5+1]<<8))>0) buffer[5+1]++;
-    buffer[6+1]=StartAdresse+Size;
-    buffer[7+1]=(StartAdresse+Size)>>8;
-
-    /// Hader senden
-    SendBuffer();   // 1.128Byte
-    SendBuffer();   // 2.128Byte
-
-    for(int i=0;i<128;i++) buffer[i+1] = i;
-
-    for(int i=0; i<200; i++)
-    {
-        SendBuffer();
-        SendBuffer();
-    }
-}
-

@@ -1,3 +1,18 @@
+//////////////////////////////////////////////////
+//                                              //
+// lan64tool                                    //
+// von Thorsten Kattanek                        //
+//                                              //
+// #file: mainwindow.cpp                        //
+//                                              //
+// Dieser Sourcecode ist Copyright geschützt!   //
+// Geistiges Eigentum von Th.Kattanek           //
+//                                              //
+// Letzte Änderung am 27.05.2018                //
+// www.emu64.de                                 //
+//                                              //
+//////////////////////////////////////////////////
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
