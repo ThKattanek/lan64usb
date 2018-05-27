@@ -3,38 +3,93 @@
 Lan64USBClass::Lan64USBClass()
 {
     usb_device = NULL;
-    isUSBOpen = false;
+    isUSBDeviceOpen = false;
 
-    // LibUSB initialisieren
-    libusb_init(&libusb_ctx);
+    // LibUSB Session beginnen
+    int ret = libusb_init(&libusb_ctx);
+
+    if(ret < 0)
+    {
+        isLibUSBSessionOpen = false;
+        cerr << "Fehler beim öffnen eine LibUSB-1 Session!" << endl;
+    }
+    else
+        isLibUSBSessionOpen = true;
 }
 
 Lan64USBClass::~Lan64USBClass()
 {
-    /*
-    usbhidCloseDevice(dev);
-    */
+    // geöffnetes Device schließen
+    closeDevice(usb_device_handle);
+
+    // LibUSB Session beenden
     libusb_exit(libusb_ctx);
 }
 
-libusb_device* Lan64USBClass::openDevice(void)
+libusb_device* Lan64USBClass::openDevice(const uint16_t idVendor,const uint16_t idProduct, const char* vendorName, const char* productName)
 {
-    /*
-usbDevice_t     *dev = NULL;
-unsigned char   rawVid[2] = {USB_CFG_VENDOR_ID}, rawPid[2] = {USB_CFG_DEVICE_ID};
-char            vendorName[] = {USB_CFG_VENDOR_NAME, 0}, productName[] = {USB_CFG_DEVICE_NAME, 0};
-int             vid = rawVid[0] + 256 * rawVid[1];
-int             pid = rawPid[0] + 256 * rawPid[1];
-int             err;
+    libusb_device* usb_device;
+    libusb_device_descriptor desc;
 
-    if((err = usbhidOpenDevice(&dev, vid, vendorName, pid, productName, 0)) != 0)
+    // USB Device anhand der Vendor und Protuct ID öffnen
+    usb_device_handle = libusb_open_device_with_vid_pid(libusb_ctx, idVendor, idProduct);
+
+    if(usb_device_handle == NULL)
     {
-        fprintf(stderr, "error finding %s: %s\n", productName, usbErrorMessage(err));
+        cerr << "Es wurden kein USB Devices gefunden mit idVendor: 0x" << hex << idVendor << " und idProduct: 0x" << hex << idProduct << endl;
         return NULL;
     }
-    return dev;
-    */
-    return NULL;
+
+    // Device mit hilfe des Handles holen
+    usb_device = libusb_get_device(usb_device_handle);
+
+    int ret = libusb_get_device_descriptor(usb_device, &desc);
+    if (ret < 0)
+    {
+        cerr << "Fehler beim holen des Device Descriptors." << endl;
+        return NULL;
+    }
+
+    char string[256];
+    int len = libusb_get_string_descriptor_ascii(usb_device_handle, desc.iProduct, (unsigned char*)string, sizeof(string));
+    if(len < 0)
+    {
+        cerr << "Fehler beim auslesen des Product Namen." << endl;
+        return NULL;
+    }
+    else
+    {
+        // Prüfen ob ProductName übereinstimmt
+        if(strcmp(string, productName) == 0)
+        {
+            len = libusb_get_string_descriptor_ascii(usb_device_handle, desc.iManufacturer, (unsigned char*)string, sizeof(string));
+            if(len < 0)
+            {
+                cerr << "Fehler beim auslesen des Vendor Namen." << endl;
+                return NULL;
+            }
+            else
+            {
+                if(strcmp(string, vendorName) != 0)
+                {
+                    cerr << "Vendor Name stimmt nicht! SOLL: " << vendorName << " IST: " << string << endl;
+                    return NULL;
+                }
+            }
+        }
+        else
+        {
+            cerr << "Product Name stimmt nicht! SOLL: " << productName << " IST: " << string << endl;
+            return NULL;
+        }
+    }
+
+    return usb_device;
+}
+
+void Lan64USBClass::closeDevice(libusb_device_handle *device_handle)
+{
+    libusb_close(device_handle);
 }
 
 char *Lan64USBClass::usbErrorMessage(int errCode)
@@ -57,21 +112,26 @@ static char buffer[80];
 
 bool Lan64USBClass::Open()
 {
-    /*
-    dev = openDevice();
-    if(dev == NULL)
+    if(!isLibUSBSessionOpen)
+        return false;
+
+    // Daten aus usbconfig.h der Firmware aufarbeiten
+    unsigned char   rawVid[2] = {USB_CFG_VENDOR_ID}, rawPid[2] = {USB_CFG_DEVICE_ID};
+    char            vendorName[] = {USB_CFG_VENDOR_NAME, 0}, productName[] = {USB_CFG_DEVICE_NAME, 0};
+    int             vendor_id = rawVid[0] + 256 * rawVid[1];
+    int             product_id = rawPid[0] + 256 * rawPid[1];
+
+    usb_device = openDevice(vendor_id, product_id, vendorName, productName);
+    if(usb_device == NULL)
     {
-        isUSBOpen = false;
+        isUSBDeviceOpen = false;
     }
     else
     {
-        isUSBOpen = true;
+        isUSBDeviceOpen = true;
     }
 
-    return isUSBOpen;
-    */
-
-    return false;
+    return isUSBDeviceOpen;
 }
 
 bool Lan64USBClass::SendBuffer()
